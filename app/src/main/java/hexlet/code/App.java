@@ -1,7 +1,8 @@
-import controllers.RootController;
+package hexlet.code;
+
+import hexlet.code.controllers.RootController;
 import io.javalin.Javalin;
 
-import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
 import static io.javalin.apibuilder.ApiBuilder.get;
 
