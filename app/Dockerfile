@@ -1,8 +1,8 @@
 FROM gradle:8.0.1-jdk17
 
-WORKDIR /app
+WORKDIR /app/
 
-COPY /app .
+COPY / .
 
 RUN gradle installDist
 
