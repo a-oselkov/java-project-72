@@ -52,10 +52,10 @@ public class App {
             path("urls", () -> {
                 get(UrlController.listUrls);
                 post(UrlController.createUrl);
-//                path("{id}", () -> {
-//                    get(UrlController.showUrl);
-//                    post("/checks", UrlController.checkUrl);
-//                });
+                path("{id}", () -> {
+                    get(UrlController.showUrl);
+                    post("/checks", UrlController.checkUrl);
+                });
             });
         });
     }

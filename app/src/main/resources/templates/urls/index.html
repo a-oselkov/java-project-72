@@ -7,21 +7,25 @@
 <body>
 <section layout:fragment="content">
   <div class="card-body p-5 bg-light">
+    <h4>Выберите сайт для проверки</h4>
     <table class="table table-striped mt-5">
       <thead>
         <tr>
           <th class="col-1">ID</th>
           <th class="col-3">Имя</th>
-          <th class="col-2">Добавлен</th>
+          <th class="col-2">Последняя проверка</th>
+          <th class="col-2">Код ответа</th>
         </tr>
       </thead>
       <tbody>
-        <tr th:each="url : ${urls}" th:object="${urls}">
+        <tr th:each="url : ${urls}" >
           <td th:text="${url.getId()}"></td>
           <td>
-            <a th:href="@{/urls/{id}(id=${url.getId()})}" th:text="${#strings.abbreviate(url.getName(), 30)}"></a>
+            <a th:href="@{/urls/{id}(id=${url.getId()})}" th:text="${#strings.abbreviate(url.getName(), 40)}"></a>
           </td>
-          <td th:text="${#temporals.format(url.getCreatedAt(), 'dd/MM/yyyy HH:mm')}"></td>
+          <td th:text="${url.getLastCheck() == null ? 'Проверка еще не проводилась' :
+          #temporals.format(url.getLastCheck().getCreatedAt(), 'dd/MM/yyyy HH:mm')}"></td>
+          <td th:text="${url.getLastCheck() == null ? '-' : url.getLastCheck().getStatusCode()}"></td>
         </tr>
       </tbody>
     </table>
@@ -29,17 +33,16 @@
   <nav aria-label="Page navigation" th:if="${#lists.size(pages)}">
     <ul class="pagination justify-content-center mt-5">
       <li th:class="'page-item' + ${currentPage <= 1 ? ' disabled' : ''}">
-        <a class="page-link" th:href="@{/urls(page=${currentPage - 1})}">Previous</a>
+        <a class="page-link" th:href="@{/urls(page=${currentPage - 1})}">Назад</a>
       </li>
       <li th:each="page : ${pages}" th:class="'page-item' + ${currentPage == page ? ' active' : ''}">
         <a class="page-link" th:href="@{/urls(page=${page})}" th:text="${page}"></a>
       </li>
       <li th:class="'page-item' + ${currentPage >= #lists.size(pages) ? ' disabled' : ''}">
-        <a class="page-link" th:href="@{/urls(page=${currentPage + 1})}">Next</a>
+        <a class="page-link" th:href="@{/urls(page=${currentPage + 1})}">Далее</a>
       </li>
     </ul>
   </nav>
-
-  </section>
+</section>
 </body>>
 </html>

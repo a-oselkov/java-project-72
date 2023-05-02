@@ -1,9 +1,17 @@
 package hexlet.code.controllers;
 
 import hexlet.code.domain.Url;
+import hexlet.code.domain.UrlCheck;
 import hexlet.code.domain.query.QUrl;
+import hexlet.code.domain.query.QUrlCheck;
 import io.ebean.PagedList;
 import io.javalin.http.Handler;
+import io.javalin.http.NotFoundResponse;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,11 +35,15 @@ public class UrlController {
 
         int lastPage = pagedUrls.getTotalPageCount() + 1;
         int currentPage = pagedUrls.getPageIndex() + 1;
+
         List<Integer> pages = IntStream
                 .range(1, lastPage)
                 .boxed()
                 .collect(Collectors.toList());
 
+//        List<Url> urlsL = new QUrl()
+//                        .select("Url.id, name, max(createdAt)")     // name is non-aggregate
+//                        .findList();
 
         ctx.attribute("urls", urls);
         ctx.attribute("pages", pages);
@@ -52,13 +64,12 @@ public class UrlController {
             if (urlExist) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flash-type", "danger");
-                //ctx.attribute("url", urlName);
                 ctx.render("index.html");
                 return;
             }
 
-            Url url1 = new Url(normalizedUrl);
-            url1.save();
+            Url url = new Url(normalizedUrl);
+            url.save();
 
         } catch (MalformedURLException e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
@@ -70,5 +81,65 @@ public class UrlController {
         ctx.sessionAttribute("flash", "Страница успешно добавлена");
         ctx.sessionAttribute("flash-type", "success");
         ctx.redirect("/urls");
+    };
+
+    public static Handler showUrl = ctx -> {
+        int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
+
+        Url url = new QUrl()
+                .id.eq(id)
+                .findOne();
+
+        if (url == null) {
+            throw new NotFoundResponse();
+        }
+        List<UrlCheck> urlChecks = new QUrlCheck()
+                .url.equalTo(url)
+                .orderBy().id.desc()
+                .findList();
+
+        ctx.attribute("urlChecks", urlChecks);
+        ctx.attribute("url", url);
+        ctx.render("urls/show.html");
+    };
+
+    public static Handler checkUrl = ctx -> {
+        int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
+
+        Url url = new QUrl()
+                .id.eq(id)
+                .findOne();
+
+        if (url == null) {
+            throw new NotFoundResponse();
+        }
+
+        String checkUrl = url.getName();
+        try {
+            HttpResponse<String> response = Unirest
+                    .get(checkUrl)
+                    .asString();
+
+            String html = response.getBody();
+
+            Document doc = Jsoup.parse(html, "UTF-8");
+
+            String title = doc.title() == null ? "" : doc.title();
+            String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
+            String description = doc.selectFirst("meta[name=description]") == null
+                    ? "" : doc.selectFirst("meta[name=description]").attr("content");
+            int statusCode = response.getStatus();
+
+            UrlCheck urlCheck = new UrlCheck(title, h1, description, statusCode, url);
+            urlCheck.save();
+
+            ctx.sessionAttribute("flash", "Страница успешно проверена");
+            ctx.sessionAttribute("flash-type", "success");
+            ctx.redirect("/urls/" + id);
+        } catch (UnirestException e) {
+            ctx.sessionAttribute("flash", "Страница недоступна");
+            ctx.sessionAttribute("flash-type", "danger");
+            ctx.redirect("/urls/" + id);
+        }
     };
 }
