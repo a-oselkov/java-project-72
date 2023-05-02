@@ -123,7 +123,6 @@ public class UrlController {
             String html = response.getBody();
 
             Document doc = Jsoup.parse(html, "UTF-8");
-
             String title = doc.title() == null ? "" : doc.title();
             String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
             String description = doc.selectFirst("meta[name=description]") == null
