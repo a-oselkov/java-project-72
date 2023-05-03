@@ -41,10 +41,11 @@ public class UrlController {
                 .boxed()
                 .collect(Collectors.toList());
 
-//        List<Url> urlsL = new QUrl()
-//                        .select("Url.id, name, max(createdAt)")     // name is non-aggregate
-//                        .findList();
+        List<Url> urlsL = new QUrl()
+                        .select("name")     // name is non-aggregate
+                        .findList();
 
+        ctx.attribute("i", urlsL);
         ctx.attribute("urls", urls);
         ctx.attribute("pages", pages);
         ctx.attribute("currentPage", currentPage);
