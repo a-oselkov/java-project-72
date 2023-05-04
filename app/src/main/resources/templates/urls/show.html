@@ -7,6 +7,7 @@
 <body>
 <section layout:fragment="content">
   <div class="card-body p-5 bg-light">
+    <h5 th:text="${#strings.abbreviate(url.getName(), 30)}"></h5>
     <table class="table table-striped mt-5">
       <thead>
         <tr>
@@ -16,7 +17,6 @@
         </tr>
       </thead>
       <tbody>
-        <h5 th:text="${#strings.abbreviate(url.getName(), 30)}"></h5>
         <tr>
           <td th:text="${url.getId()}"></td>
           <td th:text="${#strings.abbreviate(url.getName(), 30)}"></td>

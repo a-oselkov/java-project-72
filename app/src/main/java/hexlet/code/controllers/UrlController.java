@@ -41,11 +41,6 @@ public class UrlController {
                 .boxed()
                 .collect(Collectors.toList());
 
-        List<Url> urlsL = new QUrl()
-                        .select("name")     // name is non-aggregate
-                        .findList();
-
-        ctx.attribute("i", urlsL);
         ctx.attribute("urls", urls);
         ctx.attribute("pages", pages);
         ctx.attribute("currentPage", currentPage);
@@ -123,7 +118,10 @@ public class UrlController {
 
             String html = response.getBody();
 
+            //Document doc = Jsoup.connect(checkUrl).get();
+
             Document doc = Jsoup.parse(html, "UTF-8");
+
             String title = doc.title() == null ? "" : doc.title();
             String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
             String description = doc.selectFirst("meta[name=description]") == null
