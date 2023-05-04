@@ -112,7 +112,7 @@ public class UrlController {
 
         HttpResponse<String> response;
         try {
-             response = Unirest
+            response = Unirest
                     .get(url.getName())
                     .asString();
 
