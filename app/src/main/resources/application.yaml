@@ -13,3 +13,4 @@ ebean:
     ddl:
       run: true
       generate: true
+

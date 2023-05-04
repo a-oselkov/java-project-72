@@ -58,9 +58,9 @@ public class UrlController {
                     .exists();
 
             if (urlExist) {
-                ctx.sessionAttribute("flash", "Страница уже существует");
+                ctx.sessionAttribute("flash", "Страница уже добавлена");
                 ctx.sessionAttribute("flash-type", "danger");
-                ctx.render("index.html");
+                ctx.redirect("/");
                 return;
             }
 
@@ -70,7 +70,7 @@ public class UrlController {
         } catch (MalformedURLException e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flash-type", "danger");
-            ctx.render("index.html");
+            ctx.redirect("/");
             return;
         }
 
@@ -110,10 +110,10 @@ public class UrlController {
             throw new NotFoundResponse();
         }
 
-        String checkUrl = url.getName();
+        HttpResponse<String> response;
         try {
-            HttpResponse<String> response = Unirest
-                    .get(checkUrl)
+             response = Unirest
+                    .get(url.getName())
                     .asString();
 
             String html = response.getBody();
@@ -122,7 +122,7 @@ public class UrlController {
 
             Document doc = Jsoup.parse(html, "UTF-8");
 
-            String title = doc.title() == null ? "" : doc.title();
+            String title = doc.title();
             String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
             String description = doc.selectFirst("meta[name=description]") == null
                     ? "" : doc.selectFirst("meta[name=description]").attr("content");
@@ -133,11 +133,10 @@ public class UrlController {
 
             ctx.sessionAttribute("flash", "Страница успешно проверена");
             ctx.sessionAttribute("flash-type", "success");
-            ctx.redirect("/urls/" + id);
         } catch (UnirestException e) {
             ctx.sessionAttribute("flash", "Страница недоступна");
             ctx.sessionAttribute("flash-type", "danger");
-            ctx.redirect("/urls/" + id);
         }
+        ctx.redirect("/urls/" + id);
     };
 }

@@ -57,6 +57,14 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+    }
 }
 
 application {
@@ -65,12 +73,6 @@ application {
 
 testlogger {
     showStandardStreams true
-}
-
-jacocoTestReport {
-    reports {
-        xml.required = true
-    }
 }
 
 task generateMigrations(type: JavaExec) {
