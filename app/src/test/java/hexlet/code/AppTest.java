@@ -19,7 +19,6 @@ class AppTest {
 
     private static Javalin app;
     private static String baseUrl;
-    private static Url existingUrl;
     private static Database database;
 
     @BeforeAll
@@ -39,10 +38,11 @@ class AppTest {
     @BeforeEach
     void beforeEach() {
         database.script().run("/clearTables.sql");
+        database.script().run("/seed.sql");
     }
 
     @Nested
-    class RootTest {
+    class RootControllerTest {
         @Test
         void testIndex() {
             HttpResponse<String> response = Unirest.get(baseUrl).asString();
@@ -52,12 +52,9 @@ class AppTest {
     }
 
     @Nested
-    class UrlTest {
+    class UrlControllerTest {
         @Test
         void showListUrl() {
-            Url url = new Url("https://example.com");
-            url.save();
-
             HttpResponse<String> response = Unirest
                     .get(baseUrl + "/urls")
                     .asString();
@@ -117,9 +114,6 @@ class AppTest {
 
         @Test
         void testExistUrl() {
-            Url url = new Url("https://example.com");
-            url.save();
-
             String inputUrl = "https://example.com";
 
             HttpResponse<String> responsePost = Unirest
@@ -137,6 +131,25 @@ class AppTest {
 
             assertThat(response.getStatus()).isEqualTo(200);
             assertThat(body).contains("Страница уже добавлена");
+        }
+
+        @Test
+        void testShowUrl() {
+            Url url = new QUrl()
+                    .name.eq("https://example.com")
+                    .findOne();
+            HttpResponse<String> response = Unirest
+                    .get(baseUrl + "/urls/" + url.getId())
+                    .asString();
+            String content = response.getBody();
+
+            assertThat(response.getStatus()).isEqualTo(200);
+            assertThat(content).contains("https://example.com");
+        }
+
+        @Test
+        void testCheckUrl() {
+
         }
     }
 }
