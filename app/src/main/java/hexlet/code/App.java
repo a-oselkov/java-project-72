@@ -13,39 +13,40 @@ import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
 import static io.javalin.apibuilder.ApiBuilder.get;
 
-public class App {
+public final class App {
+    public static final String DEFAULT_PORT = "8000";
+    public static final String PORT = "PORT";
+    public static final String DEVELOPMENT_DB_MODE = "development";
+    public static final String PRODUCTION_DB_MODE = "production";
+    public static final String DEFAULT_DB_MODE = "APP_ENV";
     private static int getPort() {
-        String port = System.getenv().getOrDefault("PORT", "8000");
+        String port = System.getenv().getOrDefault(PORT, DEFAULT_PORT);
         return Integer.valueOf(port);
     }
 
     private static String getMode() {
-        return System.getenv().getOrDefault("APP_ENV", "development");
+        return System.getenv().getOrDefault(DEFAULT_DB_MODE, DEVELOPMENT_DB_MODE);
     }
 
     private static boolean isProduction() {
-        return getMode().equals("production");
+        return getMode().equals(PRODUCTION_DB_MODE);
     }
 
-    // Javalin поддерживает работу с шаблонизатором thymeleaf
     private static TemplateEngine getTemplateEngine() {
-        // Создаём инстанс движка шаблонизатора
         TemplateEngine templateEngine = new TemplateEngine();
-        // Добавляем к нему диалекты
+
         templateEngine.addDialect(new LayoutDialect());
         templateEngine.addDialect(new Java8TimeDialect());
-        // Настраиваем преобразователь шаблонов, так, чтобы обрабатывались
-        // шаблоны в директории /templates/
+
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+
         templateResolver.setPrefix("/templates/");
         templateResolver.setCharacterEncoding("UTF-8");
-        // Добавляем преобразователь шаблонов к движку шаблонизатора
         templateEngine.addTemplateResolver(templateResolver);
 
         return templateEngine;
     }
 
-    // Метод добавляет маршруты в переданное приложение
     private static void addRoutes(Javalin app) {
         app.get("/", RootController.welcome);
         app.routes(() -> {
@@ -61,24 +62,14 @@ public class App {
     }
 
     public static Javalin getApp() {
-
-        // Создаём приложение
         Javalin app = Javalin.create(config -> {
-            // Включаем логгирование
             if (!isProduction()) {
                 config.enableDevLogging();
             }
             config.enableWebjars();
-            // Подключаем настроенный шаблонизатор к фреймворку
-
             JavalinThymeleaf.configure(getTemplateEngine());
         });
-
-        // Добавляем маршруты в приложение
         addRoutes(app);
-
-        // Обработчик before запускается перед каждым запросом
-        // Устанавливаем атрибут ctx для запросов
         app.before(ctx -> ctx.attribute("ctx", ctx));
 
         return app;

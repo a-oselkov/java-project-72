@@ -8,7 +8,10 @@ import io.javalin.Javalin;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
+
+import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,15 +19,18 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 class AppTest {
 
     private static Javalin app;
     private static String baseUrl;
     private static Database database;
-    private static MockWebServer mockServer;
 
     @BeforeAll
     public static void beforeAll() {
@@ -157,21 +163,23 @@ class AppTest {
 
         @Test
         void testCheckUrl() throws IOException {
-//            String filePath = "src/test/resources/test.html";
-//            Path path = Paths.get(filePath).toAbsolutePath().normalize();
-//            String testHtml = Files.readString(path);
-//
-//            MockWebServer mockServer = new MockWebServer();
-//            MockResponse mockedResponse = new MockResponse().setBody(testHtml);
-//            mockServer.enqueue(mockedResponse);
-//            mockServer.start();
+            String filePath = "src/test/resources/test.html";
+            Path path = Paths.get(filePath).toAbsolutePath().normalize();
+            String testHtml = Files.readString(path);
 
-//            String inputUrl = mockServer.url("/").toString().replaceAll("/$", "");
-            String inputUrl = "https://example1.com";
+            MockWebServer mockServer = new MockWebServer();
+            MockResponse mockedResponse = new MockResponse().setBody(testHtml);
+            mockServer.enqueue(mockedResponse);
+            mockServer.start();
+
+            String inputUrl = mockServer.url("/").toString().replaceAll("/$", "");
+
             HttpResponse responseCreateUrl = Unirest
                     .post(baseUrl + "/urls")
                     .field("url", inputUrl)
-                    .asString();
+                    .asEmpty();
+            assertThat(responseCreateUrl.getStatus()).isEqualTo(302);
+            assertThat(responseCreateUrl.getHeaders().getFirst("Location")).isEqualTo("/urls");
 
             Url url = new QUrl()
                     .name.eq(inputUrl)
@@ -180,20 +188,17 @@ class AppTest {
             HttpResponse<String> responseCheck = Unirest
                     .post(baseUrl + "/urls/" + url.getId() + "/checks")
                     .asString();
-
             assertThat(responseCheck.getStatus()).isEqualTo(302);
             assertThat(responseCheck.getHeaders().getFirst("Location")).isEqualTo("/urls/" + url.getId());
+
 
             HttpResponse<String> response = Unirest
                     .get(baseUrl + "/urls/" + url.getId())
                     .asString();
-
             String content = response.getBody();
+            assertThat(content).contains("h1Test", "titleTest", "descriptionTest", "Страница успешно проверена");
 
-            assertThat(response.getStatus()).isEqualTo(200);
-            assertThat(content).contains("Example 1");
-
-            //mockServer.shutdown();
+            mockServer.shutdown();
         }
     }
 }

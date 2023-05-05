@@ -7,7 +7,8 @@ import hexlet.code.domain.query.QUrlCheck;
 import io.ebean.PagedList;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
-import org.jsoup.Connection;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class UrlController {
+public final class UrlController {
     public static Handler listUrls = ctx -> {
         int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
         int rowsPerPage = 10;
@@ -108,16 +109,20 @@ public class UrlController {
             throw new NotFoundResponse();
         }
 
-        try {
-            Connection.Response response = Jsoup.connect(url.getName()).followRedirects(false).execute();
+        HttpResponse<String> response;
 
-            Document doc = Jsoup.connect(url.getName()).get();
+        try {
+            response = Unirest.get(url.getName()).asString();
+
+            int statusCode = response.getStatus();
+
+            Document doc = Jsoup.parse(response.getBody());
 
             String title = doc.title();
             String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
             String description = doc.selectFirst("meta[name=description]") == null
                     ? "" : doc.selectFirst("meta[name=description]").attr("content");
-            int statusCode = response.statusCode();
+
 
             UrlCheck urlCheck = new UrlCheck(title, h1, description, statusCode, url);
             urlCheck.save();
@@ -130,4 +135,37 @@ public class UrlController {
         }
         ctx.redirect("/urls/" + id);
     };
+//    int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
+//
+//        Url url = new QUrl()
+//                .id.eq(id)
+//                .findOne();
+//
+//        if (url == null) {
+//            throw new NotFoundResponse();
+//        }
+
+//        try {
+//            Connection.Response response = Jsoup.connect(url.getName()).followRedirects(false).execute();
+//
+//            Document doc = Jsoup.connect(url.getName()).get();
+//
+//            String title = doc.title();
+//            String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
+//            String description = doc.selectFirst("meta[name=description]") == null
+//                    ? "" : doc.selectFirst("meta[name=description]").attr("content");
+//            int statusCode = response.statusCode();
+//
+//            UrlCheck urlCheck = new UrlCheck(title, h1, description, statusCode, url);
+//            urlCheck.save();
+//
+//            ctx.sessionAttribute("flash", "Страница успешно проверена");
+//            ctx.sessionAttribute("flash-type", "success");
+//        } catch (Exception e) {
+//            ctx.sessionAttribute("flash", "Страница недоступна");
+//            ctx.sessionAttribute("flash-type", "danger");
+//        }
+//        ctx.redirect("/urls/" + id);
+//    };
 }
+
