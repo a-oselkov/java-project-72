@@ -10,6 +10,8 @@ import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
+import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -59,7 +61,7 @@ public class UrlController {
 
             if (urlExist) {
                 ctx.sessionAttribute("flash", "Страница уже добавлена");
-                ctx.sessionAttribute("flash-type", "danger");
+                ctx.sessionAttribute("flash-type", "info");
                 ctx.redirect("/");
                 return;
             }
@@ -110,30 +112,23 @@ public class UrlController {
             throw new NotFoundResponse();
         }
 
-        HttpResponse<String> response;
         try {
-            response = Unirest
-                    .get(url.getName())
-                    .asString();
+            Connection.Response response = Jsoup.connect(url.getName()).followRedirects(false).execute();
 
-            String html = response.getBody();
-
-            //Document doc = Jsoup.connect(checkUrl).get();
-
-            Document doc = Jsoup.parse(html, "UTF-8");
+            Document doc = Jsoup.connect(url.getName()).get();
 
             String title = doc.title();
             String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
             String description = doc.selectFirst("meta[name=description]") == null
                     ? "" : doc.selectFirst("meta[name=description]").attr("content");
-            int statusCode = response.getStatus();
+            int statusCode = response.statusCode();
 
             UrlCheck urlCheck = new UrlCheck(title, h1, description, statusCode, url);
             urlCheck.save();
 
             ctx.sessionAttribute("flash", "Страница успешно проверена");
             ctx.sessionAttribute("flash-type", "success");
-        } catch (UnirestException e) {
+        } catch (Exception e) {
             ctx.sessionAttribute("flash", "Страница недоступна");
             ctx.sessionAttribute("flash-type", "danger");
         }

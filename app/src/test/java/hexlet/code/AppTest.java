@@ -7,6 +7,7 @@ import io.ebean.Database;
 import io.javalin.Javalin;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,7 @@ class AppTest {
 
     @AfterAll
     public static void afterAll() {
+        //mockServer.shutdown();
         app.stop();
     }
 
@@ -66,7 +68,7 @@ class AppTest {
 
         @Test
         void testCreateUrl() {
-            String inputUrl = "https://www.example.com";
+            String inputUrl = "https://www.example1.com";
             HttpResponse<String> responsePost = Unirest
                     .post(baseUrl + "/urls")
                     .field("url", inputUrl)
@@ -135,21 +137,25 @@ class AppTest {
 
         @Test
         void testShowUrl() {
-            Url url = new QUrl()
-                    .name.eq("https://example.com")
-                    .findOne();
             HttpResponse<String> response = Unirest
-                    .get(baseUrl + "/urls/" + url.getId())
+                    .get(baseUrl + "/urls/1")
                     .asString();
             String content = response.getBody();
 
             assertThat(response.getStatus()).isEqualTo(200);
             assertThat(content).contains("https://example.com");
         }
-
         @Test
         void testCheckUrl() {
 
+
+            HttpResponse<String> responsePost = Unirest
+                    .post(baseUrl + "/urls/1/checks")
+                    .asString();
+
+            assertThat(responsePost.getStatus()).isEqualTo(302);
+
         }
+
     }
 }
