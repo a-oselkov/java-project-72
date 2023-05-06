@@ -1,5 +1,7 @@
 package hexlet.code.controllers;
 
+import static hexlet.code.Parser.parse;
+
 import hexlet.code.domain.Url;
 import hexlet.code.domain.UrlCheck;
 import hexlet.code.domain.query.QUrl;
@@ -9,8 +11,7 @@ import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import kong.unirest.UnirestException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,7 +40,6 @@ public final class UrlController {
                 .range(1, lastPage)
                 .boxed()
                 .collect(Collectors.toList());
-
         ctx.attribute("urls", urls);
         ctx.attribute("pages", pages);
         ctx.attribute("currentPage", currentPage);
@@ -72,7 +72,6 @@ public final class UrlController {
             ctx.redirect("/");
             return;
         }
-
         ctx.sessionAttribute("flash", "Страница успешно добавлена");
         ctx.sessionAttribute("flash-type", "success");
         ctx.redirect("/urls");
@@ -109,63 +108,21 @@ public final class UrlController {
             throw new NotFoundResponse();
         }
 
-        HttpResponse<String> response;
-
         try {
-            response = Unirest.get(url.getName()).asString();
-
-            int statusCode = response.getStatus();
-
-            Document doc = Jsoup.parse(response.getBody());
-
-            String title = doc.title();
-            String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
-            String description = doc.selectFirst("meta[name=description]") == null
-                    ? "" : doc.selectFirst("meta[name=description]").attr("content");
-
-
-            UrlCheck urlCheck = new UrlCheck(title, h1, description, statusCode, url);
+            HttpResponse<String> response = Unirest.get(url.getName()).asString();
+            UrlCheck urlCheck = parse(url, response);
             urlCheck.save();
-
             ctx.sessionAttribute("flash", "Страница успешно проверена");
             ctx.sessionAttribute("flash-type", "success");
-        } catch (Exception e) {
+        } catch (UnirestException e) {
+            UrlCheck urlCheck = new UrlCheck(url, 0, "", "", "");
+            urlCheck.save();
             ctx.sessionAttribute("flash", "Страница недоступна");
             ctx.sessionAttribute("flash-type", "danger");
         }
         ctx.redirect("/urls/" + id);
     };
-//    int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-//
-//        Url url = new QUrl()
-//                .id.eq(id)
-//                .findOne();
-//
-//        if (url == null) {
-//            throw new NotFoundResponse();
-//        }
-
-//        try {
-//            Connection.Response response = Jsoup.connect(url.getName()).followRedirects(false).execute();
-//
-//            Document doc = Jsoup.connect(url.getName()).get();
-//
-//            String title = doc.title();
-//            String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
-//            String description = doc.selectFirst("meta[name=description]") == null
-//                    ? "" : doc.selectFirst("meta[name=description]").attr("content");
-//            int statusCode = response.statusCode();
-//
-//            UrlCheck urlCheck = new UrlCheck(title, h1, description, statusCode, url);
-//            urlCheck.save();
-//
-//            ctx.sessionAttribute("flash", "Страница успешно проверена");
-//            ctx.sessionAttribute("flash-type", "success");
-//        } catch (Exception e) {
-//            ctx.sessionAttribute("flash", "Страница недоступна");
-//            ctx.sessionAttribute("flash-type", "danger");
-//        }
-//        ctx.redirect("/urls/" + id);
-//    };
 }
+
+
 

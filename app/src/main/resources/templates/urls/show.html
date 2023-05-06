@@ -6,55 +6,56 @@
 </head>
 <body>
 <section layout:fragment="content">
-  <div class="card-body p-5 bg-light">
-    <h5 th:text="${#strings.abbreviate(url.getName(), 30)}"></h5>
-    <table class="table table-striped mt-5">
-      <thead>
-        <tr>
-          <th class="col-1">ID</th>
-          <th class="col-3">Имя</th>
-          <th class="col-2">Добавлен</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td th:text="${url.getId()}"></td>
-          <td th:text="${#strings.abbreviate(url.getName(), 30)}"></td>
-          <td th:text="${#temporals.format(url.getCreatedAt(), 'dd/MM/yyyy HH:mm')}"></td>
-        </tr>
-      </tbody>
-    </table>
-    <br>
-    <form method="post" th:action="@{/urls/{id}/checks(id=${url.getId()})}">
-      <button type="submit" class="h-100 btn btn-lg btn-outline-dark px-sm-5">Запустить проверку</button>
-    </form>
-  </div>
+    <div class="card-body p-5 bg-light">
+        <h5 th:text="${#strings.abbreviate(url.getName(), 30)}"></h5>
+        <table class="table table-striped mt-5">
+            <thead>
+            <tr>
+                <th class="col-1">ID</th>
+                <th class="col-3">Имя</th>
+                <th class="col-2">Добавлен</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:text="${url.getId()}"></td>
+                <td th:text="${#strings.abbreviate(url.getName(), 30)}"></td>
+                <td th:text="${#temporals.format(url.getCreatedAt(), 'dd/MM/yyyy HH:mm')}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <form method="post" th:action="@{/urls/{id}/checks(id=${url.getId()})}">
+            <button type="submit" class="h-100 btn btn-lg btn-outline-dark px-sm-5">Запустить проверку</button>
+        </form>
+    </div>
 
-  <div class="card-body p-5">
-    <h4>Проверки</h4>
-    <table class="table table-striped mt-5">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Код ответа</th>
-          <th class="col-2">title</th>
-          <th class="col-3">h1</th>
-          <th class="col-4">description</th>
-          <th>Дата проверки</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="urlCheck : ${urlChecks}">
-          <td  th:text="${urlCheck.getId()}"></td>
-          <td  th:text="${urlCheck.getStatusCode()}"></td>
-          <td  th:text="${#strings.abbreviate(urlCheck.getTitle(), 100)}"></td>
-          <td  th:text="${#strings.abbreviate(urlCheck.getH1(), 100)}"></td>
-          <td  th:text="${#strings.abbreviate(urlCheck.getDescription(), 200)}"></td>
-          <td  th:text="${#temporals.format(urlCheck.getCreatedAt(), 'dd/MM/yyyy HH:mm')}"></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="card-body p-5">
+        <h4>Проверки</h4>
+        <table class="table table-striped mt-5">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Код ответа</th>
+                <th class="col-2">title</th>
+                <th class="col-3">h1</th>
+                <th class="col-4">description</th>
+                <th>Дата проверки</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="urlCheck : ${urlChecks}">
+                <td th:text="${urlCheck.getId()}"></td>
+                <td th:text="${urlCheck.getStatusCode()}"></td>
+                <td th:text="${#strings.abbreviate(urlCheck.getTitle(), 100)}"></td>
+                <td th:text="${#strings.abbreviate(urlCheck.getH1(), 100)}"></td>
+                <td th:text="${#strings.abbreviate(urlCheck.getDescription(), 200)}"></td>
+                <td th:text="${#temporals.format(urlCheck.getCreatedAt(), 'dd/MM/yyyy HH:mm')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </section>
-</body>>
+</body>
+>
 </html>

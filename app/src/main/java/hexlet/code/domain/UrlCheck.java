@@ -29,14 +29,18 @@ public final class UrlCheck extends Model {
     @ManyToOne
     private Url url;
 
-    public UrlCheck(String title, String h1, String description, int statusCode, Url url) {
+    public UrlCheck(Url url, int statusCode, String title, String h1, String description) {
         this.title = title;
         this.h1 = h1;
         this.description = description;
         this.statusCode = statusCode;
         this.url = url;
     }
+    public UrlCheck(Url url) {
 
+        this.url = url;
+
+    }
     public long getId() {
         return id;
     }
