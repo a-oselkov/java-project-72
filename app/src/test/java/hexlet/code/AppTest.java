@@ -231,7 +231,6 @@ class AppTest {
                     .asString();
             content = response.getBody();
             assertThat(content).contains("Страница недоступна/Некорректный адрес");
-
         }
     }
 }

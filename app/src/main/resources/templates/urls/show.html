@@ -44,7 +44,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="urlCheck : ${urlChecks}">
+            <tr th:each="urlCheck : ${urlChecks}" th:if="${urlCheck.getStatusCode() != 0}">
                 <td th:text="${urlCheck.getId()}"></td>
                 <td th:text="${urlCheck.getStatusCode()}"></td>
                 <td th:text="${#strings.abbreviate(urlCheck.getTitle(), 100)}"></td>
@@ -57,5 +57,4 @@
     </div>
 </section>
 </body>
->
 </html>
