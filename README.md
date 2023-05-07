@@ -22,8 +22,9 @@ When the application is launched locally, it will be available at http://localho
  - If the input is incorrect or the page has already been added earlier, you will receive a corresponding message and will be able to repeat the input.
  - On the page with the list of added sites, select the site you are interested in and run the check. You will receive a message about the verification status "The page has been successfully verified" or "The page is unavailable".
  - The results of all checks of this address will be displayed below.
- 
- ![1](https://user-images.githubusercontent.com/122821639/236706125-41af0920-25ef-4146-b543-9cbb5560ef15.png)
- ![4](https://user-images.githubusercontent.com/122821639/236706193-e978d48f-04c9-4372-a998-f9b6b19e3500.png)
- ![3](https://user-images.githubusercontent.com/122821639/236706208-d7fc82d8-fa46-4a81-82f0-de7834838827.png)
 
+ ![11](https://user-images.githubusercontent.com/122821639/236706891-af333a09-8ba3-42bf-900d-c82b462cefa8.png)
+ 
+ ![4](https://user-images.githubusercontent.com/122821639/236706193-e978d48f-04c9-4372-a998-f9b6b19e3500.png)
+ 
+ ![5](https://user-images.githubusercontent.com/122821639/236706339-225b1e55-1f21-4fea-af53-2982a22d71db.png)
