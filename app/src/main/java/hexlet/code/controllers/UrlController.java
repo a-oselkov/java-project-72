@@ -1,10 +1,5 @@
 package hexlet.code.controllers;
 
-import static hexlet.code.Utils.Parser.parse;
-import static hexlet.code.Utils.Query.findUrlChecks;
-import static hexlet.code.Utils.Paging.getPagedUrls;
-import static hexlet.code.Utils.Paging.getPagesAmount;
-
 import hexlet.code.Utils.Query;
 import hexlet.code.domain.Url;
 import hexlet.code.domain.UrlCheck;
@@ -19,18 +14,21 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import static hexlet.code.Utils.Paging.getPageNumbers;
+import static hexlet.code.Utils.Paging.getPagedUrls;
+import static hexlet.code.Utils.Parser.parse;
+import static hexlet.code.Utils.Query.getUrlChecks;
+
 public final class UrlController {
     private static final int ROWS_PER_PAGE = 10;
 
     public static Handler listUrls = ctx -> {
         int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
-
         PagedList<Url> pagedUrls = getPagedUrls(page, ROWS_PER_PAGE);
-        List<Url> urls = pagedUrls.getList();
 
-        int lastPage = pagedUrls.getTotalPageCount() + 1;
+        List<Url> urls = pagedUrls.getList();
+        List<Integer> pages = getPageNumbers(pagedUrls);
         int currentPage = pagedUrls.getPageIndex() + 1;
-        List<Integer> pages = getPagesAmount(lastPage);
 
         ctx.attribute("urls", urls);
         ctx.attribute("pages", pages);
@@ -39,12 +37,11 @@ public final class UrlController {
     };
 
     public static Handler createUrl = ctx -> {
-
         try {
             URL urlNameFromForm = new URL(ctx.formParam("url"));
             String normalizedUrl = urlNameFromForm.getProtocol() + "://" + urlNameFromForm.getAuthority();
 
-            Url existUrl = Query.findUrlByName(normalizedUrl);
+            Url existUrl = Query.getUrlByName(normalizedUrl);
 
             if (existUrl != null) {
                 ctx.sessionAttribute("flash", "Страница уже добавлена");
@@ -55,7 +52,7 @@ public final class UrlController {
             Url url = new Url(normalizedUrl);
             url.save();
         } catch (MalformedURLException e) {
-            ctx.sessionAttribute("flash", "Некорректный URL");
+            ctx.sessionAttribute("flash", "Некорректный адрес");
             ctx.sessionAttribute("flash-type", "danger");
             ctx.redirect("/");
             return;
@@ -67,12 +64,12 @@ public final class UrlController {
 
     public static Handler showUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-        Url url = Query.findUrlById(id);
+        Url url = Query.getUrlById(id);
 
         if (url == null) {
             throw new NotFoundResponse();
         }
-        List<UrlCheck> urlChecks = findUrlChecks(url);
+        List<UrlCheck> urlChecks = getUrlChecks(url);
         ctx.attribute("urlChecks", urlChecks);
         ctx.attribute("url", url);
         ctx.render("urls/show.html");
@@ -80,7 +77,7 @@ public final class UrlController {
 
     public static Handler checkUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-        Url url = Query.findUrlById(id);
+        Url url = Query.getUrlById(id);
         if (url == null) {
             throw new NotFoundResponse();
         }

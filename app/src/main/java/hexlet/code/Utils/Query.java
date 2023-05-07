@@ -8,28 +8,32 @@ import hexlet.code.domain.query.QUrlCheck;
 import java.util.List;
 
 public final class Query {
-    public static Url findUrlByName(String name) {
-        return new QUrl()
+    public static Url getUrlByName(String name) {
+        Url url = new QUrl()
                 .name.eq(name)
                 .findOne();
+        return url;
     }
 
-    public static Url findUrlById(long id) {
-        return new QUrl()
+    public static Url getUrlById(long id) {
+        Url url = new QUrl()
                 .id.eq(id)
                 .findOne();
+        return url;
     }
 
-    public static UrlCheck findUrlCheckByUrl(Url url) {
-        return new QUrlCheck()
+    public static UrlCheck getUrlCheckByUrl(Url url) {
+        UrlCheck urlCheck = new QUrlCheck()
                 .url.eq(url)
                 .findOne();
+        return urlCheck;
     }
 
-    public static List<UrlCheck> findUrlChecks(Url url) {
-        return new QUrlCheck()
+    public static List<UrlCheck> getUrlChecks(Url url) {
+        List<UrlCheck> urlChecks = new QUrlCheck()
                 .url.equalTo(url)
                 .orderBy().id.desc()
                 .findList();
+        return urlChecks;
     }
 }
