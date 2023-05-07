@@ -5,7 +5,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/72d59884714fb7eea045/test_coverage)](https://codeclimate.com/github/a-oselkov/java-project-72/test_coverage)
 
 
-##Page Analyzer:
+## Page Analyzer:
 A simple analysis of a website for its suitability for SEO.
 
 https://page-analyzer-jmag.onrender.com - deployment using **render**
@@ -16,7 +16,7 @@ make run
 ```
 When the application is launched locally, it will be available at http://localhost:8000/
 
-####Quick guide
+#### Quick guide
  - Enter the site address according to the example.
  - In case of successful input, you will see the message "The page has been successfully added" and you will be moved to a page with a list of added sites with brief information about the last check (the "Sites" tab).
  - If the input is incorrect or the page has already been added earlier, you will receive a corresponding message and will be able to repeat the input.
