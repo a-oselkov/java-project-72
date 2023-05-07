@@ -52,6 +52,13 @@
                 <td th:text="${#strings.abbreviate(urlCheck.getDescription(), 200)}"></td>
                 <td th:text="${#temporals.format(urlCheck.getCreatedAt(), 'dd/MM/yyyy HH:mm')}"></td>
             </tr>
+
+            <tr th:each="urlCheck : ${urlChecks}" th:if="${urlCheck.getStatusCode() == 0}">
+                <td th:text="${urlCheck.getId()}"></td>
+                <td align="center"> - </td>
+                <td colspan="3">Страница недоступна или введен некорректный адрес</td>
+                <td th:text="${#temporals.format(urlCheck.getCreatedAt(), 'dd/MM/yyyy HH:mm')}"></td>
+            </tr>
             </tbody>
         </table>
     </div>

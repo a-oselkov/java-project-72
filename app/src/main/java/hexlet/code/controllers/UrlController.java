@@ -1,11 +1,13 @@
 package hexlet.code.controllers;
 
-import static hexlet.code.Parser.parse;
+import static hexlet.code.Utils.Parser.parse;
+import static hexlet.code.Utils.Query.findUrlChecks;
+import static hexlet.code.Utils.Paging.getPagedUrls;
+import static hexlet.code.Utils.Paging.getPagesAmount;
 
+import hexlet.code.Utils.Query;
 import hexlet.code.domain.Url;
 import hexlet.code.domain.UrlCheck;
-import hexlet.code.domain.query.QUrl;
-import hexlet.code.domain.query.QUrlCheck;
 import io.ebean.PagedList;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
@@ -16,30 +18,20 @@ import kong.unirest.UnirestException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public final class UrlController {
+    private static final int ROWS_PER_PAGE = 10;
+
     public static Handler listUrls = ctx -> {
         int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
-        int rowsPerPage = 10;
 
-        PagedList<Url> pagedUrls = new QUrl()
-                .setFirstRow(page * rowsPerPage)
-                .setMaxRows(rowsPerPage)
-                .orderBy()
-                .id.asc()
-                .findPagedList();
-
+        PagedList<Url> pagedUrls = getPagedUrls(page, ROWS_PER_PAGE);
         List<Url> urls = pagedUrls.getList();
 
         int lastPage = pagedUrls.getTotalPageCount() + 1;
         int currentPage = pagedUrls.getPageIndex() + 1;
+        List<Integer> pages = getPagesAmount(lastPage);
 
-        List<Integer> pages = IntStream
-                .range(1, lastPage)
-                .boxed()
-                .collect(Collectors.toList());
         ctx.attribute("urls", urls);
         ctx.attribute("pages", pages);
         ctx.attribute("currentPage", currentPage);
@@ -49,23 +41,19 @@ public final class UrlController {
     public static Handler createUrl = ctx -> {
 
         try {
-            URL urlFromForm = new URL(ctx.formParam("url"));
-            String normalizedUrl = urlFromForm.getProtocol() + "://" + urlFromForm.getAuthority();
+            URL urlNameFromForm = new URL(ctx.formParam("url"));
+            String normalizedUrl = urlNameFromForm.getProtocol() + "://" + urlNameFromForm.getAuthority();
 
-            boolean urlExist = new QUrl()
-                    .name.eq(normalizedUrl)
-                    .exists();
+            Url existUrl = Query.findUrlByName(normalizedUrl);
 
-            if (urlExist) {
+            if (existUrl != null) {
                 ctx.sessionAttribute("flash", "Страница уже добавлена");
                 ctx.sessionAttribute("flash-type", "info");
                 ctx.redirect("/");
                 return;
             }
-
             Url url = new Url(normalizedUrl);
             url.save();
-
         } catch (MalformedURLException e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flash-type", "danger");
@@ -79,19 +67,12 @@ public final class UrlController {
 
     public static Handler showUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-
-        Url url = new QUrl()
-                .id.eq(id)
-                .findOne();
+        Url url = Query.findUrlById(id);
 
         if (url == null) {
             throw new NotFoundResponse();
         }
-        List<UrlCheck> urlChecks = new QUrlCheck()
-                .url.equalTo(url)
-                .orderBy().id.desc()
-                .findList();
-
+        List<UrlCheck> urlChecks = findUrlChecks(url);
         ctx.attribute("urlChecks", urlChecks);
         ctx.attribute("url", url);
         ctx.render("urls/show.html");
@@ -99,15 +80,10 @@ public final class UrlController {
 
     public static Handler checkUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-
-        Url url = new QUrl()
-                .id.eq(id)
-                .findOne();
-
+        Url url = Query.findUrlById(id);
         if (url == null) {
             throw new NotFoundResponse();
         }
-
         try {
             HttpResponse<String> response = Unirest.get(url.getName()).asString();
             UrlCheck urlCheck = parse(url, response);
