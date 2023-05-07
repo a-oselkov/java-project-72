@@ -16,11 +16,7 @@ make run
 ```
 When the application is launched locally, it will be available at http://localhost:8000/
 
-<<<<<<< HEAD
-#### Quick guide
-=======
 ### Quick guide
->>>>>>> 17f7efd (update README.md)
  - Enter the site address according to the example.
  - In case of successful input, you will see the message "The page has been successfully added" and you will be moved to a page with a list of added sites with brief information about the last check (the "Sites" tab).
  - If the input is incorrect or the page has already been added earlier, you will receive a corresponding message and will be able to repeat the input.
