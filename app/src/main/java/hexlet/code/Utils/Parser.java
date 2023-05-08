@@ -16,8 +16,8 @@ public class Parser {
         int statusCode = response.getStatus();
         String title = doc.title();
         String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
-        String description = doc.selectFirst("meta[name=description]") == null
-                ? "" : doc.selectFirst("meta[name=description]").attr("content");
+        String description = doc.selectFirst("meta[name=description]") == null ?
+                "" : doc.selectFirst("meta[name=description]").attr("content");
 
         return new UrlCheck(url, statusCode, title, h1, description);
     }
