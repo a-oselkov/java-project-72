@@ -25,17 +25,22 @@ import static hexlet.code.Utils.Query.getUrlByName;
 import static hexlet.code.Utils.Query.getUrlCheckByUrl;
 import static hexlet.code.Utils.Response.getResponse;
 import static hexlet.code.Utils.Response.postResponse;
+import static hexlet.code.controllers.UrlController.ALREADY_ADDED_MSG;
+import static hexlet.code.controllers.UrlController.INVALID_ADDRESS_MSG;
+import static hexlet.code.controllers.UrlController.SUCCESSFULLY_ADDED_MSG;
+import static hexlet.code.controllers.UrlController.SUCCESSFULLY_VERIFIED_MSG;
+import static hexlet.code.controllers.UrlController.UNAVAILABLE_MSG;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AppTest {
-    private static Javalin app;
-    private static String baseUrl;
-    private static Database database;
     private static final String TEST_FILE_PATH = "src/test/resources/test.html";
     private static final String EXIST_URL_NAME = "https://example.com";
     private static final String INCORRECT_URL_NAME = "example.com";
     private static final String NEW_URL_NAME = "https://example1.com";
     private static final String NOT_AVAILABLE_URL_NAME = "https://example";
+    private static Javalin app;
+    private static String baseUrl;
+    private static Database database;
 
     @BeforeAll
     public static void beforeAll() {
@@ -85,8 +90,7 @@ class AppTest {
 
             HttpResponse<String> responseGet = getResponse(baseUrl + "/urls");
             assertThat(responseGet.getStatus()).isEqualTo(200);
-            assertThat(responseGet.getBody()).contains(NEW_URL_NAME, "Страница успешно добавлена",
-                    "Проверка еще не проводилась");
+            assertThat(responseGet.getBody()).contains(NEW_URL_NAME, SUCCESSFULLY_ADDED_MSG);
 
             Url url = getUrlByName(NEW_URL_NAME);
             assertThat(url).isNotNull();
@@ -104,7 +108,7 @@ class AppTest {
             Url url = getUrlByName(INCORRECT_URL_NAME);
             assertThat(url).isNull();
             assertThat(responseGet.getStatus()).isEqualTo(200);
-            assertThat(responseGet.getBody()).contains("Некорректный адрес");
+            assertThat(responseGet.getBody()).contains(INVALID_ADDRESS_MSG);
         }
 
         @Test
@@ -116,7 +120,7 @@ class AppTest {
 
             HttpResponse<String> responseGet = getResponse(baseUrl + "/");
             assertThat(responseGet.getStatus()).isEqualTo(200);
-            assertThat(responseGet.getBody()).contains("Страница уже добавлена");
+            assertThat(responseGet.getBody()).contains(ALREADY_ADDED_MSG);
         }
 
         @Test
@@ -149,8 +153,8 @@ class AppTest {
             assertThat(respPost.getHeaders().getFirst("Location")).isEqualTo("/urls/" + url.getId());
 
             HttpResponse<String> responseGet = getResponse(baseUrl + "/urls/" + url.getId());
-            assertThat(responseGet.getBody()).contains("h1Test", "titleTest", "descriptionTest",
-                    "Страница успешно проверена");
+            assertThat(responseGet.getBody()).contains(SUCCESSFULLY_VERIFIED_MSG);
+            assertThat(responseGet.getBody()).contains("h1Test", "titleTest", "descriptionTest");
 
             UrlCheck urlCheck = getUrlCheckByUrl(url);
             assertThat(urlCheck).isNotNull();
@@ -168,7 +172,7 @@ class AppTest {
             assertThat(responsePost.getHeaders().getFirst("Location")).isEqualTo("/urls/" + url.getId());
 
             HttpResponse<String> responseGet = getResponse(baseUrl + "/urls/" + url.getId());
-            assertThat(responseGet.getBody()).contains("Страница недоступна");
+            assertThat(responseGet.getBody()).contains(UNAVAILABLE_MSG);
 
             HttpResponse<String> respGet = getResponse(baseUrl + "/urls");
             assertThat(respGet.getBody()).contains("Страница недоступна/Некорректный адрес");

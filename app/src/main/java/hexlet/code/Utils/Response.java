@@ -20,9 +20,9 @@ public final class Response {
     }
 
     public static HttpResponse<String> postResponse(String urlName) {
-        HttpResponse<String> response = Unirest
+        HttpResponse<String> string = Unirest
                 .post(urlName)
                 .asString();
-        return response;
+        return string;
     }
 }

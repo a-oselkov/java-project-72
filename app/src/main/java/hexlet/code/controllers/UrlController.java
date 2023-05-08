@@ -1,13 +1,11 @@
 package hexlet.code.controllers;
 
-import hexlet.code.Utils.Query;
 import hexlet.code.domain.Url;
 import hexlet.code.domain.UrlCheck;
 import io.ebean.PagedList;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 
 import java.net.MalformedURLException;
@@ -17,9 +15,17 @@ import java.util.List;
 import static hexlet.code.Utils.Paging.getPageNumbers;
 import static hexlet.code.Utils.Paging.getPagedUrls;
 import static hexlet.code.Utils.Parser.parse;
+import static hexlet.code.Utils.Query.getUrlById;
+import static hexlet.code.Utils.Query.getUrlByName;
 import static hexlet.code.Utils.Query.getUrlChecks;
+import static hexlet.code.Utils.Response.getResponse;
 
 public final class UrlController {
+    public static final String ALREADY_ADDED_MSG = "Страница уже добавлена";
+    public static final String INVALID_ADDRESS_MSG = "Некорректный адрес";
+    public static final String SUCCESSFULLY_ADDED_MSG = "Страница успешно добавлена";
+    public static final String SUCCESSFULLY_VERIFIED_MSG = "Страница успешно проверена";
+    public static final String UNAVAILABLE_MSG = "Страница недоступна";
     private static final int ROWS_PER_PAGE = 10;
 
     public static Handler listUrls = ctx -> {
@@ -41,10 +47,10 @@ public final class UrlController {
             URL urlNameFromForm = new URL(ctx.formParam("url"));
             String normalizedUrl = urlNameFromForm.getProtocol() + "://" + urlNameFromForm.getAuthority();
 
-            Url existUrl = Query.getUrlByName(normalizedUrl);
+            Url existUrl = getUrlByName(normalizedUrl);
 
             if (existUrl != null) {
-                ctx.sessionAttribute("flash", "Страница уже добавлена");
+                ctx.sessionAttribute("flash", ALREADY_ADDED_MSG);
                 ctx.sessionAttribute("flash-type", "info");
                 ctx.redirect("/");
                 return;
@@ -52,24 +58,25 @@ public final class UrlController {
             Url url = new Url(normalizedUrl);
             url.save();
         } catch (MalformedURLException e) {
-            ctx.sessionAttribute("flash", "Некорректный адрес");
+            ctx.sessionAttribute("flash", INVALID_ADDRESS_MSG);
             ctx.sessionAttribute("flash-type", "danger");
             ctx.redirect("/");
             return;
         }
-        ctx.sessionAttribute("flash", "Страница успешно добавлена");
+        ctx.sessionAttribute("flash", SUCCESSFULLY_ADDED_MSG);
         ctx.sessionAttribute("flash-type", "success");
         ctx.redirect("/urls");
     };
 
     public static Handler showUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-        Url url = Query.getUrlById(id);
+        Url url = getUrlById(id);
 
         if (url == null) {
             throw new NotFoundResponse();
         }
         List<UrlCheck> urlChecks = getUrlChecks(url);
+
         ctx.attribute("urlChecks", urlChecks);
         ctx.attribute("url", url);
         ctx.render("urls/show.html");
@@ -77,20 +84,20 @@ public final class UrlController {
 
     public static Handler checkUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-        Url url = Query.getUrlById(id);
+        Url url = getUrlById(id);
         if (url == null) {
             throw new NotFoundResponse();
         }
         try {
-            HttpResponse<String> response = Unirest.get(url.getName()).asString();
+            HttpResponse<String> response = getResponse(url.getName());
             UrlCheck urlCheck = parse(url, response);
             urlCheck.save();
-            ctx.sessionAttribute("flash", "Страница успешно проверена");
+            ctx.sessionAttribute("flash", SUCCESSFULLY_VERIFIED_MSG);
             ctx.sessionAttribute("flash-type", "success");
         } catch (UnirestException e) {
             UrlCheck urlCheck = new UrlCheck(url, 0, "", "", "");
             urlCheck.save();
-            ctx.sessionAttribute("flash", "Страница недоступна");
+            ctx.sessionAttribute("flash", UNAVAILABLE_MSG);
             ctx.sessionAttribute("flash-type", "danger");
         }
         ctx.redirect("/urls/" + id);

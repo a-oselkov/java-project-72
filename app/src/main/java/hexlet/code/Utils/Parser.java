@@ -6,7 +6,7 @@ import kong.unirest.HttpResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-public class Parser {
+public final class Parser {
     public static UrlCheck parse(Url url, HttpResponse<String> response) {
 //            Connection.Response response = Jsoup.connect(url.getName()).followRedirects(true).execute();
 //            Document doc = Jsoup.connect(url.getName()).get();
@@ -14,7 +14,7 @@ public class Parser {
         Document doc = Jsoup.parse(response.getBody());
 
         int statusCode = response.getStatus();
-        String title = doc.title();
+        String title = doc.title() == null ? "" : doc.title();
         String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
         String description = doc.selectFirst("meta[name=description]") == null
                 ? "" : doc.selectFirst("meta[name=description]").attr("content");

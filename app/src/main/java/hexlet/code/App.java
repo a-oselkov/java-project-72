@@ -14,11 +14,11 @@ import static io.javalin.apibuilder.ApiBuilder.post;
 import static io.javalin.apibuilder.ApiBuilder.get;
 
 public final class App {
-    public static final String DEFAULT_PORT = "8000";
-    public static final String PORT = "PORT";
-    public static final String DEVELOPMENT_DB_MODE = "development";
-    public static final String PRODUCTION_DB_MODE = "production";
-    public static final String DEFAULT_DB_MODE = "APP_ENV";
+    private static final String DEFAULT_PORT = "8000";
+    private static final String PORT = "PORT";
+    private static final String DEVELOPMENT_DB_MODE = "development";
+    private static final String PRODUCTION_DB_MODE = "production";
+    private static final String DEFAULT_DB_MODE = "APP_ENV";
     private static int getPort() {
         String port = System.getenv().getOrDefault(PORT, DEFAULT_PORT);
         return Integer.valueOf(port);
