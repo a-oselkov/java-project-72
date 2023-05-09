@@ -3,15 +3,15 @@ package hexlet.code.Utils;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
-public final class Response {
-    public static HttpResponse<String> getResponse(String urlName) {
+public final class Responses {
+    public static HttpResponse<String> responseToGet(String urlName) {
         HttpResponse<String> response = Unirest
                 .get(urlName)
                 .asString();
         return response;
     }
 
-    public static HttpResponse<String> postResponse(String urlName, String fieldName, String fieldValue) {
+    public static HttpResponse<String> responseToPost(String urlName, String fieldName, String fieldValue) {
         HttpResponse<String> response = Unirest
                 .post(urlName)
                 .field(fieldName, fieldValue)
@@ -19,10 +19,10 @@ public final class Response {
         return response;
     }
 
-    public static HttpResponse<String> postResponse(String urlName) {
-        HttpResponse<String> string = Unirest
+    public static HttpResponse<String> responseToPost(String urlName) {
+        HttpResponse<String> response = Unirest
                 .post(urlName)
                 .asString();
-        return string;
+        return response;
     }
 }

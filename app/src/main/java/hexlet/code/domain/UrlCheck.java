@@ -27,7 +27,7 @@ public final class UrlCheck extends Model {
     private String description;
 
     @ManyToOne
-    private Url url;
+    private final Url url;
 
     public UrlCheck(Url url, int statusCode, String title, String h1, String description) {
         this.title = title;
@@ -35,11 +35,6 @@ public final class UrlCheck extends Model {
         this.description = description;
         this.statusCode = statusCode;
         this.url = url;
-    }
-    public UrlCheck(Url url) {
-
-        this.url = url;
-
     }
     public long getId() {
         return id;
@@ -63,6 +58,10 @@ public final class UrlCheck extends Model {
 
     public String getDescription() {
         return description;
+    }
+
+    public Url getUrl() {
+        return url;
     }
 }
 

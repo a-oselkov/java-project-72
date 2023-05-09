@@ -15,10 +15,10 @@ import java.util.List;
 import static hexlet.code.Utils.Paging.getPageNumbers;
 import static hexlet.code.Utils.Paging.getPagedUrls;
 import static hexlet.code.Utils.Parser.parse;
-import static hexlet.code.Utils.Query.getUrlById;
-import static hexlet.code.Utils.Query.getUrlByName;
-import static hexlet.code.Utils.Query.getUrlChecks;
-import static hexlet.code.Utils.Response.getResponse;
+import static hexlet.code.Utils.Querys.getUrlById;
+import static hexlet.code.Utils.Querys.getUrlByName;
+import static hexlet.code.Utils.Querys.getUrlChecks;
+import static hexlet.code.Utils.Responses.responseToGet;
 
 public final class UrlController {
     public static final String ALREADY_ADDED_MSG = "Страница уже добавлена";
@@ -71,7 +71,6 @@ public final class UrlController {
     public static Handler showUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
         Url url = getUrlById(id);
-
         if (url == null) {
             throw new NotFoundResponse();
         }
@@ -88,18 +87,18 @@ public final class UrlController {
         if (url == null) {
             throw new NotFoundResponse();
         }
+        UrlCheck urlCheck;
         try {
-            HttpResponse<String> response = getResponse(url.getName());
-            UrlCheck urlCheck = parse(url, response);
-            urlCheck.save();
+            HttpResponse<String> response = responseToGet(url.getName());
+            urlCheck = parse(url, response);
             ctx.sessionAttribute("flash", SUCCESSFULLY_VERIFIED_MSG);
             ctx.sessionAttribute("flash-type", "success");
         } catch (UnirestException e) {
-            UrlCheck urlCheck = new UrlCheck(url, 0, "", "", "");
-            urlCheck.save();
+            urlCheck = new UrlCheck(url, 0, "", "", "");
             ctx.sessionAttribute("flash", UNAVAILABLE_MSG);
             ctx.sessionAttribute("flash-type", "danger");
         }
+        urlCheck.save();
         ctx.redirect("/urls/" + id);
     };
 }

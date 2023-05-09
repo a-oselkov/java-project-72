@@ -21,10 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static hexlet.code.Utils.Query.getUrlByName;
-import static hexlet.code.Utils.Query.getUrlCheckByUrl;
-import static hexlet.code.Utils.Response.getResponse;
-import static hexlet.code.Utils.Response.postResponse;
+import static hexlet.code.Utils.Querys.getUrlByName;
+import static hexlet.code.Utils.Querys.getUrlCheckByUrl;
+import static hexlet.code.Utils.Responses.responseToGet;
+import static hexlet.code.Utils.Responses.responseToPost;
 import static hexlet.code.controllers.UrlController.ALREADY_ADDED_MSG;
 import static hexlet.code.controllers.UrlController.INVALID_ADDRESS_MSG;
 import static hexlet.code.controllers.UrlController.SUCCESSFULLY_ADDED_MSG;
@@ -66,7 +66,7 @@ class AppTest {
     class RootControllerTest {
         @Test
         void testIndex() {
-            HttpResponse<String> response = getResponse(baseUrl);
+            HttpResponse<String> response = responseToGet(baseUrl);
             assertThat(response.getStatus()).isEqualTo(200);
             assertThat(response.getBody()).contains("Анализатор страниц");
         }
@@ -76,19 +76,19 @@ class AppTest {
     class UrlControllerTest {
         @Test
         void showListUrl() {
-            HttpResponse<String> response = getResponse(baseUrl + "/urls");
+            HttpResponse<String> response = responseToGet(baseUrl + "/urls");
             assertThat(response.getStatus()).isEqualTo(200);
             assertThat(response.getBody()).contains(EXIST_URL_NAME);
         }
 
         @Test
         void testCreateUrl() {
-            HttpResponse<String> responsePost = postResponse(baseUrl + "/urls",
+            HttpResponse<String> responsePost = responseToPost(baseUrl + "/urls",
                     "url", NEW_URL_NAME);
             assertThat(responsePost.getStatus()).isEqualTo(302);
             assertThat(responsePost.getHeaders().getFirst("Location")).isEqualTo("/urls");
 
-            HttpResponse<String> responseGet = getResponse(baseUrl + "/urls");
+            HttpResponse<String> responseGet = responseToGet(baseUrl + "/urls");
             assertThat(responseGet.getStatus()).isEqualTo(200);
             assertThat(responseGet.getBody()).contains(NEW_URL_NAME, SUCCESSFULLY_ADDED_MSG);
 
@@ -99,12 +99,12 @@ class AppTest {
 
         @Test
         void testIncorrectUrl() {
-            HttpResponse<String> responsePost = postResponse(baseUrl + "/urls",
+            HttpResponse<String> responsePost = responseToPost(baseUrl + "/urls",
                     "url", INCORRECT_URL_NAME);
             assertThat(responsePost.getStatus()).isEqualTo(302);
             assertThat(responsePost.getHeaders().getFirst("Location")).isEqualTo("/");
 
-            HttpResponse<String> responseGet = getResponse(baseUrl + "/");
+            HttpResponse<String> responseGet = responseToGet(baseUrl + "/");
             Url url = getUrlByName(INCORRECT_URL_NAME);
             assertThat(url).isNull();
             assertThat(responseGet.getStatus()).isEqualTo(200);
@@ -113,19 +113,19 @@ class AppTest {
 
         @Test
         void testExistUrl() {
-            HttpResponse<String> responsePost = postResponse(baseUrl + "/urls",
+            HttpResponse<String> responsePost = responseToPost(baseUrl + "/urls",
                     "url", EXIST_URL_NAME);
             assertThat(responsePost.getStatus()).isEqualTo(302);
             assertThat(responsePost.getHeaders().getFirst("Location")).isEqualTo("/");
 
-            HttpResponse<String> responseGet = getResponse(baseUrl + "/");
+            HttpResponse<String> responseGet = responseToGet(baseUrl + "/");
             assertThat(responseGet.getStatus()).isEqualTo(200);
             assertThat(responseGet.getBody()).contains(ALREADY_ADDED_MSG);
         }
 
         @Test
         void testShowUrl() {
-            HttpResponse<String> response = getResponse(baseUrl + "/urls/1");
+            HttpResponse<String> response = responseToGet(baseUrl + "/urls/1");
             assertThat(response.getStatus()).isEqualTo(200);
             assertThat(response.getBody()).contains(EXIST_URL_NAME);
         }
@@ -142,17 +142,17 @@ class AppTest {
 
             String urlName = mockServer.url("/").toString().replaceAll("/$", "");
 
-            HttpResponse<String> responsePost = postResponse(baseUrl + "/urls",
+            HttpResponse<String> responsePost = responseToPost(baseUrl + "/urls",
                     "url", urlName);
             assertThat(responsePost.getStatus()).isEqualTo(302);
             assertThat(responsePost.getHeaders().getFirst("Location")).isEqualTo("/urls");
 
             Url url = getUrlByName(urlName);
-            HttpResponse<String> respPost = postResponse(baseUrl + "/urls/" + url.getId() + "/checks");
+            HttpResponse<String> respPost = responseToPost(baseUrl + "/urls/" + url.getId() + "/checks");
             assertThat(respPost.getStatus()).isEqualTo(302);
             assertThat(respPost.getHeaders().getFirst("Location")).isEqualTo("/urls/" + url.getId());
 
-            HttpResponse<String> responseGet = getResponse(baseUrl + "/urls/" + url.getId());
+            HttpResponse<String> responseGet = responseToGet(baseUrl + "/urls/" + url.getId());
             assertThat(responseGet.getBody()).contains(SUCCESSFULLY_VERIFIED_MSG);
             assertThat(responseGet.getBody()).contains("h1Test", "titleTest", "descriptionTest");
 
@@ -167,14 +167,14 @@ class AppTest {
             Url url = new Url(NOT_AVAILABLE_URL_NAME);
             url.save();
 
-            HttpResponse<String> responsePost = postResponse(baseUrl + "/urls/" + url.getId() + "/checks");
+            HttpResponse<String> responsePost = responseToPost(baseUrl + "/urls/" + url.getId() + "/checks");
             assertThat(responsePost.getStatus()).isEqualTo(302);
             assertThat(responsePost.getHeaders().getFirst("Location")).isEqualTo("/urls/" + url.getId());
 
-            HttpResponse<String> responseGet = getResponse(baseUrl + "/urls/" + url.getId());
+            HttpResponse<String> responseGet = responseToGet(baseUrl + "/urls/" + url.getId());
             assertThat(responseGet.getBody()).contains(UNAVAILABLE_MSG);
 
-            HttpResponse<String> respGet = getResponse(baseUrl + "/urls");
+            HttpResponse<String> respGet = responseToGet(baseUrl + "/urls");
             assertThat(respGet.getBody()).contains("Страница недоступна/Некорректный адрес");
         }
     }

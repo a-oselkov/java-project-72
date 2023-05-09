@@ -24,7 +24,7 @@
                     <a th:href="@{/urls/{id}(id=${url.getId()})}"
                        th:text="${#strings.abbreviate(url.getName(), 40)}"></a>
                 </td>
-                <td th:text="${url.getLastCheck() == null} ?
+                <td th:text="${url.getUrlChecks().isEmpty()} ?
                     'Проверка еще не проводилась' :
                     (
                     ${url.getLastCheck().getStatusCode == 0} ?
@@ -32,7 +32,7 @@
                     ${#temporals.format(url.getLastCheck().getCreatedAt(), 'dd/MM/yyyy HH:mm')}
                     )">
                 </td>
-                <td th:text="${url.getLastCheck() == null} ?
+                <td th:text="${url.getUrlChecks().isEmpty()} ?
                     '-' :
                     (
                     ${url.getLastCheck().getStatusCode() == 0} ?
@@ -42,7 +42,6 @@
             </tr>
             </tbody>
         </table>
-        <p th:text="${result}"></p>
     </div>
     <nav aria-label="Page navigation" th:if="${#lists.size(pages)}">
         <ul class="pagination justify-content-center mt-5">

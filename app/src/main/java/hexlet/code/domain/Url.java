@@ -1,6 +1,7 @@
 package hexlet.code.domain;
 
 import io.ebean.Model;
+import io.ebean.annotation.NotNull;
 import io.ebean.annotation.WhenCreated;
 
 import javax.persistence.Entity;
@@ -14,10 +15,10 @@ public final class Url extends Model {
     @Id
     private long id;
 
-    private String name;
+    private final String name;
 
     @WhenCreated
-    private Instant createdAt;
+    private  Instant createdAt;
 
     @OneToMany
     private List<UrlCheck> urlChecks;
@@ -43,10 +44,11 @@ public final class Url extends Model {
     }
 
     public UrlCheck getLastCheck() {
-        if (urlChecks.isEmpty()) {
-            return null;
+        if(!urlChecks.isEmpty()) {
+            int lastCheckIndex = urlChecks.size() - 1;
+            return urlChecks.get(lastCheckIndex);
+        } else {
+            throw new IndexOutOfBoundsException();
         }
-        int lastCheckIndex = urlChecks.size() - 1;
-        return urlChecks.get(lastCheckIndex);
     }
 }

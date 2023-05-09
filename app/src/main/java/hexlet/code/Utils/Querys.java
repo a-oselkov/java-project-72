@@ -7,7 +7,7 @@ import hexlet.code.domain.query.QUrlCheck;
 
 import java.util.List;
 
-public final class Query {
+public final class Querys {
     public static Url getUrlByName(String name) {
         Url url = new QUrl()
                 .name.eq(name)
