@@ -12,10 +12,11 @@ public final class Parser {
 //            Document doc = Jsoup.connect(url.getName()).get();
 //            int statusCode = response.statusCode();
         Document doc = Jsoup.parse(response.getBody());
-
         int statusCode = response.getStatus();
-        String title = doc.title() == null ? "" : doc.title();
+        String title = doc.title();
+
         String h1 = doc.selectFirst("h1") == null ? "" : doc.selectFirst("h1").text();
+
         String description = doc.selectFirst("meta[name=description]") == null
                 ? "" : doc.selectFirst("meta[name=description]").attr("content");
 
