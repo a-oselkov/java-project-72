@@ -10,20 +10,18 @@ import java.util.stream.IntStream;
 
 public final class Paging {
     public static PagedList<Url> getPagedUrls(int page, int rowsPerPage) {
-        PagedList<Url> pagedList = new QUrl()
+        return new QUrl()
                 .setFirstRow(page * rowsPerPage)
                 .setMaxRows(rowsPerPage)
                 .orderBy()
                 .id.asc()
                 .findPagedList();
-        return pagedList;
     }
     public static List<Integer> getPageNumbers(PagedList<Url> pagedUrls) {
         int lastPage = pagedUrls.getTotalPageCount() + 1;
-        List<Integer> pages = IntStream
+        return IntStream
                 .range(1, lastPage)
                 .boxed()
                 .collect(Collectors.toList());
-        return pages;
     }
 }

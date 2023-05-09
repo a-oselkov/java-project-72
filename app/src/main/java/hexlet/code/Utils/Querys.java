@@ -9,31 +9,27 @@ import java.util.List;
 
 public final class Querys {
     public static Url getUrlByName(String name) {
-        Url url = new QUrl()
+        return new QUrl()
                 .name.eq(name)
                 .findOne();
-        return url;
     }
 
     public static Url getUrlById(long id) {
-        Url url = new QUrl()
+        return new QUrl()
                 .id.eq(id)
                 .findOne();
-        return url;
     }
 
     public static UrlCheck getUrlCheckByUrl(Url url) {
-        UrlCheck urlCheck = new QUrlCheck()
+        return new QUrlCheck()
                 .url.eq(url)
                 .findOne();
-        return urlCheck;
     }
 
     public static List<UrlCheck> getUrlChecks(Url url) {
-        List<UrlCheck> urlChecks = new QUrlCheck()
+        return new QUrlCheck()
                 .url.equalTo(url)
                 .orderBy().id.desc()
                 .findList();
-        return urlChecks;
     }
 }

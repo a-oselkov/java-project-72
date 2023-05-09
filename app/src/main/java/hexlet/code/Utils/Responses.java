@@ -5,24 +5,21 @@ import kong.unirest.Unirest;
 
 public final class Responses {
     public static HttpResponse<String> responseToGet(String urlName) {
-        HttpResponse<String> response = Unirest
+        return Unirest
                 .get(urlName)
                 .asString();
-        return response;
     }
 
     public static HttpResponse<String> responseToPost(String urlName, String fieldName, String fieldValue) {
-        HttpResponse<String> response = Unirest
+        return Unirest
                 .post(urlName)
                 .field(fieldName, fieldValue)
                 .asString();
-        return response;
     }
 
     public static HttpResponse<String> responseToPost(String urlName) {
-        HttpResponse<String> response = Unirest
+        return Unirest
                 .post(urlName)
                 .asString();
-        return response;
     }
 }
