@@ -34,12 +34,12 @@ public final class Url extends Model {
         return name;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
     public List<UrlCheck> getUrlChecks() {
         return urlChecks;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
     public UrlCheck getLastCheck() {
