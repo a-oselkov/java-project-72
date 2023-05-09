@@ -1,7 +1,6 @@
 package hexlet.code.domain;
 
 import io.ebean.Model;
-import io.ebean.annotation.NotNull;
 import io.ebean.annotation.WhenCreated;
 
 import javax.persistence.Entity;
@@ -44,7 +43,7 @@ public final class Url extends Model {
     }
 
     public UrlCheck getLastCheck() {
-        if(!urlChecks.isEmpty()) {
+        if (!urlChecks.isEmpty()) {
             int lastCheckIndex = urlChecks.size() - 1;
             return urlChecks.get(lastCheckIndex);
         } else {
