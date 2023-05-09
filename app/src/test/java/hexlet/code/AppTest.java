@@ -161,7 +161,6 @@ class AppTest {
 
             mockServer.shutdown();
         }
-
         @Test
         void testCheckUrlNotAvailable() {
             Url url = new Url(NOT_AVAILABLE_URL_NAME);

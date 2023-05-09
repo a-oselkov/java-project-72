@@ -37,7 +37,6 @@ public final class Url extends Model {
     public Instant getCreatedAt() {
         return createdAt;
     }
-
     public List<UrlCheck> getUrlChecks() {
         return urlChecks;
     }
