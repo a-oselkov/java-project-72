@@ -1,4 +1,4 @@
-package hexlet.code.Utils;
+package hexlet.code.utils;
 
 import hexlet.code.domain.Url;
 import hexlet.code.domain.UrlCheck;
@@ -8,9 +8,6 @@ import org.jsoup.nodes.Document;
 
 public final class Parser {
     public static UrlCheck parse(Url url, HttpResponse<String> response) {
-//            Connection.Response response = Jsoup.connect(url.getName()).followRedirects(true).execute();
-//            Document doc = Jsoup.connect(url.getName()).get();
-//            int statusCode = response.statusCode();
         Document doc = Jsoup.parse(response.getBody());
         int statusCode = response.getStatus();
         String title = doc.title();

@@ -21,10 +21,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static hexlet.code.Utils.Querys.getUrlByName;
-import static hexlet.code.Utils.Querys.getUrlCheckByUrl;
-import static hexlet.code.Utils.Responses.responseToGet;
-import static hexlet.code.Utils.Responses.responseToPost;
+import static hexlet.code.utils.Querys.getUrlByName;
+import static hexlet.code.utils.Querys.getUrlCheckByUrl;
+import static hexlet.code.utils.Responses.responseToGet;
+import static hexlet.code.utils.Responses.responseToPost;
 import static hexlet.code.controllers.UrlController.ALREADY_ADDED_MSG;
 import static hexlet.code.controllers.UrlController.INVALID_ADDRESS_MSG;
 import static hexlet.code.controllers.UrlController.SUCCESSFULLY_ADDED_MSG;

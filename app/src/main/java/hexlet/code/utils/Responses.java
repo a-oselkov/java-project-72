@@ -1,4 +1,4 @@
-package hexlet.code.Utils;
+package hexlet.code.utils;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;

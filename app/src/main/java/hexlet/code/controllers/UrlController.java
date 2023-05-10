@@ -12,13 +12,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import static hexlet.code.Utils.Paging.getPageNumbers;
-import static hexlet.code.Utils.Paging.getPagedUrls;
-import static hexlet.code.Utils.Parser.parse;
-import static hexlet.code.Utils.Querys.getUrlById;
-import static hexlet.code.Utils.Querys.getUrlByName;
-import static hexlet.code.Utils.Querys.getUrlChecks;
-import static hexlet.code.Utils.Responses.responseToGet;
+import static hexlet.code.utils.Paging.getPageNumbers;
+import static hexlet.code.utils.Paging.getPagedUrls;
+import static hexlet.code.utils.Parser.parse;
+import static hexlet.code.utils.Querys.getUrlById;
+import static hexlet.code.utils.Querys.getUrlByName;
+import static hexlet.code.utils.Querys.getUrlChecks;
+import static hexlet.code.utils.Responses.responseToGet;
 
 public final class UrlController {
     public static final String ALREADY_ADDED_MSG = "Страница уже добавлена";
