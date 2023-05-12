@@ -46,7 +46,7 @@ public final class Url extends Model {
             int lastCheckIndex = urlChecks.size() - 1;
             return urlChecks.get(lastCheckIndex);
         } else {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("Проверок еще не прводилось, список пуст");
         }
     }
 }
