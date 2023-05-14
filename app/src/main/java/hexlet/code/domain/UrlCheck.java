@@ -36,6 +36,11 @@ public final class UrlCheck extends Model {
         this.statusCode = statusCode;
         this.url = url;
     }
+
+    public UrlCheck(Url url) {
+        this(url, 0, "", "","");
+    }
+
     public long getId() {
         return id;
     }

@@ -94,7 +94,7 @@ public final class UrlController {
             ctx.sessionAttribute("flash", SUCCESSFULLY_VERIFIED_MSG);
             ctx.sessionAttribute("flash-type", "success");
         } catch (UnirestException e) {
-            urlCheck = new UrlCheck(url, 0, "", "", "");
+            urlCheck = new UrlCheck(url);
             ctx.sessionAttribute("flash", UNAVAILABLE_MSG);
             ctx.sessionAttribute("flash-type", "danger");
         }
