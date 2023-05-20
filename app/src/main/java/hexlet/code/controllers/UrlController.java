@@ -2,6 +2,10 @@ package hexlet.code.controllers;
 
 import hexlet.code.domain.Url;
 import hexlet.code.domain.UrlCheck;
+import hexlet.code.utils.Paging;
+import hexlet.code.utils.Parser;
+import hexlet.code.utils.Querys;
+import hexlet.code.utils.Responses;
 import io.ebean.PagedList;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
@@ -11,14 +15,6 @@ import kong.unirest.UnirestException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
-import static hexlet.code.utils.Paging.getPageNumbers;
-import static hexlet.code.utils.Paging.getPagedUrls;
-import static hexlet.code.utils.Parser.parse;
-import static hexlet.code.utils.Querys.getUrlById;
-import static hexlet.code.utils.Querys.getUrlByName;
-import static hexlet.code.utils.Querys.getUrlChecks;
-import static hexlet.code.utils.Responses.responseToGet;
 
 public final class UrlController {
     public static final String ALREADY_ADDED_MSG = "Страница уже добавлена";
@@ -30,10 +26,10 @@ public final class UrlController {
 
     public static Handler listUrls = ctx -> {
         int page = ctx.queryParamAsClass("page", Integer.class).getOrDefault(1) - 1;
-        PagedList<Url> pagedUrls = getPagedUrls(page, ROWS_PER_PAGE);
+        PagedList<Url> pagedUrls = Paging.getPagedUrls(page, ROWS_PER_PAGE);
 
         List<Url> urls = pagedUrls.getList();
-        List<Integer> pages = getPageNumbers(pagedUrls);
+        List<Integer> pages = Paging.getPageNumbers(pagedUrls);
         int currentPage = pagedUrls.getPageIndex() + 1;
 
         ctx.attribute("urls", urls);
@@ -47,7 +43,7 @@ public final class UrlController {
             URL urlNameFromForm = new URL(ctx.formParam("url"));
             String normalizedUrl = urlNameFromForm.getProtocol() + "://" + urlNameFromForm.getAuthority();
 
-            Url existUrl = getUrlByName(normalizedUrl);
+            Url existUrl = Querys.getUrlByName(normalizedUrl);
 
             if (existUrl != null) {
                 ctx.sessionAttribute("flash", ALREADY_ADDED_MSG);
@@ -70,11 +66,11 @@ public final class UrlController {
 
     public static Handler showUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-        Url url = getUrlById(id);
+        Url url = Querys.getUrlById(id);
         if (url == null) {
             throw new NotFoundResponse();
         }
-        List<UrlCheck> urlChecks = getUrlChecks(url);
+        List<UrlCheck> urlChecks = Querys.getUrlChecks(url);
 
         ctx.attribute("urlChecks", urlChecks);
         ctx.attribute("url", url);
@@ -83,14 +79,14 @@ public final class UrlController {
 
     public static Handler checkUrl = ctx -> {
         int id = ctx.pathParamAsClass("id", Integer.class).getOrDefault(null);
-        Url url = getUrlById(id);
+        Url url = Querys.getUrlById(id);
         if (url == null) {
             throw new NotFoundResponse();
         }
         UrlCheck urlCheck;
         try {
-            HttpResponse<String> response = responseToGet(url.getName());
-            urlCheck = parse(url, response);
+            HttpResponse<String> response = Responses.responseToGet(url.getName());
+            urlCheck = Parser.parse(url, response);
             ctx.sessionAttribute("flash", SUCCESSFULLY_VERIFIED_MSG);
             ctx.sessionAttribute("flash-type", "success");
         } catch (UnirestException e) {
