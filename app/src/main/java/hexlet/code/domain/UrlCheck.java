@@ -38,7 +38,7 @@ public final class UrlCheck extends Model {
     }
 
     public UrlCheck(Url url) {
-        this(url, 400, "", "", "");
+        this(url, 0, "", "", "");
     }
 
     public long getId() {
