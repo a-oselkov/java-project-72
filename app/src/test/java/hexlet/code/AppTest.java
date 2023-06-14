@@ -164,7 +164,8 @@ class AppTest {
             Url url = new Url(NOT_AVAILABLE_URL_NAME);
             url.save();
 
-            HttpResponse<String> responsePost = Responses.responseToPost(baseUrl + "/urls/" + url.getId() + "/checks");
+            HttpResponse<String> responsePost =
+                    Responses.responseToPost(baseUrl + "/urls/" + url.getId() + "/checks");
             assertThat(responsePost.getStatus()).isEqualTo(302);
             assertThat(responsePost.getHeaders().getFirst("Location")).isEqualTo("/urls/" + url.getId());
 
