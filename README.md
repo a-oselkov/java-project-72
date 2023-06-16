@@ -12,7 +12,7 @@ To run locally, use the command:
 ```
 make run
 ```
-When the application is launched locally, it will be available at http://localhost:8000/
+When the application is launched locally, it will be available at http://localhost:5001/
 
 #### Quick guide
  - Enter the site address according to the example.
