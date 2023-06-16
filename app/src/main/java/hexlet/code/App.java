@@ -14,7 +14,7 @@ import static io.javalin.apibuilder.ApiBuilder.post;
 import static io.javalin.apibuilder.ApiBuilder.get;
 
 public final class App {
-    private static final String DEFAULT_PORT = "5001";
+    private static final String DEFAULT_PORT = "8000";
     private static final String PORT = "PORT";
     private static final String DEVELOPMENT_DB_MODE = "development";
     private static final String PRODUCTION_DB_MODE = "production";
